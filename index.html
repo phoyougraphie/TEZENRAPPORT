@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport de visite — Tezenis Toulouse</title>
+<style>
+  :root {
+    --tez-rose: #E8496A;
+    --tez-rose-2: #C73558;
+    --tez-rose-light: #FFF0F3;
+    --tez-coral: #FF6B6B;
+    --tez-dark: #0F0F1A;
+    --tez-dark-2: #1A1A2E;
+    --tez-gray: #6B7280;
+    --tez-gray-light: #F3F4F6;
+    --tez-white: #FFFFFF;
+    --tez-green: #10B981;
+    --tez-orange: #F59E0B;
+    --tez-red: #EF4444;
+    --tez-blue: #3B82F6;
+    --tez-border: rgba(255,255,255,0.1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--tez-dark); color: var(--tez-white); min-height: 100vh; }
+
+  /* ── IMPORT SCREEN ── */
+  #import-screen {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 40px 20px;
+    background: var(--tez-dark);
+  }
+  .import-logo { width: 64px; height: 64px; background: var(--tez-rose); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; color: white; margin-bottom: 24px; letter-spacing: -2px; }
+  .import-title { font-size: 28px; font-weight: 800; margin-bottom: 8px; text-align: center; }
+  .import-sub { font-size: 14px; color: rgba(255,255,255,0.4); text-align: center; margin-bottom: 32px; line-height: 1.6; max-width: 400px; }
+  .import-area {
+    width: 100%; max-width: 480px; height: 180px;
+    background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2);
+    border-radius: 16px; padding: 16px; font-family: 'SF Mono', monospace;
+    font-size: 11px; color: rgba(255,255,255,0.6); resize: none;
+    transition: border-color 0.2s;
+  }
+  .import-area:focus { outline: none; border-color: var(--tez-rose); }
+  .import-area::placeholder { color: rgba(255,255,255,0.2); }
+  .btn-import {
+    margin-top: 14px; width: 100%; max-width: 480px;
+    background: var(--tez-rose); color: white;
+    border: none; border-radius: 12px; padding: 16px;
+    font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: background 0.2s;
+  }
+  .btn-import:hover { background: var(--tez-rose-2); }
+  .import-demo { margin-top: 12px; font-size: 12px; color: rgba(255,255,255,0.3); cursor: pointer; text-decoration: underline; }
+
+  /* ── REPORT ── */
+  #report { display: none; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, var(--tez-dark-2) 0%, #2D1B3D 100%);
+    padding: 48px 20px 40px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: 'T'; position: absolute; right: -20px; top: -30px;
+    font-size: 260px; font-weight: 900; color: rgba(232,73,106,0.07);
+    line-height: 1; pointer-events: none; letter-spacing: -10px;
+  }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,73,106,0.2); border: 1px solid rgba(232,73,106,0.4); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: var(--tez-rose); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 16px; }
+  .hero-title { font-size: 32px; font-weight: 900; line-height: 1.1; margin-bottom: 6px; }
+  .hero-title span { color: var(--tez-rose); }
+  .hero-loc { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 24px; }
+  .hero-meta { display: flex; gap: 20px; flex-wrap: wrap; }
+  .hero-meta-item { font-size: 12px; color: rgba(255,255,255,0.4); }
+  .hero-meta-item strong { color: rgba(255,255,255,0.8); display: block; font-size: 13px; }
+
+  /* Synthèse DR */
+  .section { padding: 32px 20px; max-width: 700px; margin: 0 auto; }
+  .section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tez-rose); margin-bottom: 16px; }
+
+  .enjeux-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .enjeu-card {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 18px; position: relative; overflow: hidden;
+  }
+  .enjeu-num { font-size: 48px; font-weight: 900; color: rgba(232,73,106,0.15); line-height: 1; position: absolute; right: 12px; top: 8px; }
+  .enjeu-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tez-rose); margin-bottom: 8px; }
+  .enjeu-text { font-size: 14px; line-height: 1.5; color: rgba(255,255,255,0.85); }
+
+  .plan-card {
+    background: rgba(232,73,106,0.08); border: 1px solid rgba(232,73,106,0.2);
+    border-radius: 14px; padding: 20px; margin-bottom: 24px;
+  }
+  .plan-title { font-size: 13px; font-weight: 700; color: var(--tez-rose); margin-bottom: 12px; letter-spacing: 0.03em; }
+  .plan-content { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.8); white-space: pre-wrap; }
+
+  /* Tuiles blocs */
+  .blocs-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .blocs-sub { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
+  .blocs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  @media(min-width:480px){ .blocs-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .bloc-tile {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 18px; cursor: pointer;
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .bloc-tile:hover { background: rgba(255,255,255,0.09); border-color: rgba(232,73,106,0.4); transform: translateY(-1px); }
+  .bloc-tile:active { transform: scale(0.98); }
+  .tile-icon { font-size: 24px; margin-bottom: 10px; display: block; }
+  .tile-label { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tez-rose); margin-bottom: 4px; }
+  .tile-title { font-size: 14px; font-weight: 700; color: white; line-height: 1.3; }
+  .tile-score { position: absolute; top: 14px; right: 14px; }
+  .score-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .score-dot.pos { background: var(--tez-green); }
+  .score-dot.mid { background: var(--tez-orange); }
+  .score-dot.neg { background: var(--tez-red); }
+  .score-dot.neutral { background: rgba(255,255,255,0.2); }
+  .tile-peek { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 8px; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+  /* Footer */
+  .report-footer { padding: 32px 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.06); }
+  .footer-brand { font-size: 22px; font-weight: 900; color: var(--tez-rose); margin-bottom: 4px; }
+  .footer-sub { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+    z-index: 500; display: none; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; animation: mFade 0.2s ease; }
+  @keyframes mFade { from{opacity:0} to{opacity:1} }
+  .modal {
+    background: #1A1A2E; border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; width: 100%; max-width: 560px;
+    max-height: 85vh; overflow-y: auto;
+    animation: mSlide 0.25s ease;
+  }
+  @keyframes mSlide { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .modal-header {
+    padding: 20px 20px 14px; border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    position: sticky; top: 0; background: #1A1A2E; z-index: 10;
+  }
+  .modal-icon { font-size: 28px; flex-shrink: 0; }
+  .modal-hd { flex: 1; }
+  .modal-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tez-rose); margin-bottom: 4px; }
+  .modal-title { font-size: 18px; font-weight: 800; }
+  .btn-close { background: rgba(255,255,255,0.08); border: none; color: rgba(255,255,255,0.5); width: 32px; height: 32px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+  .btn-close:hover { background: rgba(255,255,255,0.15); }
+  .modal-body { padding: 20px; }
+
+  .m-section { margin-bottom: 20px; }
+  .m-section:last-child { margin-bottom: 0; }
+  .m-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 10px; }
+  .m-label.dr { color: #60A5FA; }
+
+  .criteria-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .criteria-item:last-child { border-bottom: none; }
+  .ci-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .ci-dot.pos { background: var(--tez-green); }
+  .ci-dot.mid { background: var(--tez-orange); }
+  .ci-dot.neg { background: var(--tez-red); }
+  .ci-dot.none { background: rgba(255,255,255,0.15); }
+  .ci-text { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.4; flex: 1; }
+  .ci-badge { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px; flex-shrink: 0; }
+  .ci-badge.pos { background: rgba(16,185,129,0.15); color: #6EE7B7; }
+  .ci-badge.mid { background: rgba(245,158,11,0.15); color: #FCD34D; }
+  .ci-badge.neg { background: rgba(239,68,68,0.15); color: #FCA5A5; }
+  .ci-badge.none { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.3); }
+
+  .m-text { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.8); white-space: pre-wrap; background: rgba(255,255,255,0.04); border-radius: 10px; padding: 12px 14px; }
+  .m-text.dr-text { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15); color: rgba(200,220,255,0.9); }
+
+  .check-list { display: flex; flex-direction: column; gap: 6px; }
+  .check-list-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.4; }
+  .check-list-item::before { content: '✓'; color: var(--tez-green); font-weight: 700; flex-shrink: 0; }
+
+  .q-item { margin-bottom: 14px; }
+  .q-item:last-child { margin-bottom: 0; }
+  .q-question { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.35); margin-bottom: 4px; letter-spacing: 0.02em; }
+  .q-answer { font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.5; }
+  .q-empty { font-size: 13px; color: rgba(255,255,255,0.2); font-style: italic; }
+</style>
+</head>
+<body>
+
+<!-- Import screen -->
+<div id="import-screen">
+  <div class="import-logo">T</div>
+  <div class="import-title">Rapport de visite</div>
+  <div class="import-sub">Colle le JSON exporté depuis l'outil de saisie pour générer le rapport interactif.</div>
+  <textarea class="import-area" id="json-input" placeholder='{ "meta": { ... }, "blocs": { ... } }'></textarea>
+  <button class="btn-import" onclick="loadJSON()">Générer le rapport →</button>
+  <div class="import-demo" onclick="loadDemo()">Charger une démo</div>
+</div>
+
+<!-- Report -->
+<div id="report">
+  <div class="hero" id="hero">
+    <div class="hero-badge">Visite incognito · DR</div>
+    <div class="hero-title">Tezenis<br><span id="hero-magasin">Toulouse</span></div>
+    <div class="hero-loc" id="hero-loc"></div>
+    <div class="hero-meta" id="hero-meta"></div>
+  </div>
+
+  <!-- Synthèse DR -->
+  <div class="section">
+    <div class="section-label">Synthèse Directeur Régional</div>
+
+    <div class="enjeux-grid" id="enjeux-grid"></div>
+    <div class="plan-card" id="plan-card" style="display:none">
+      <div class="plan-title">Plan d'action — 30 jours</div>
+      <div class="plan-content" id="plan-content"></div>
+    </div>
+  </div>
+
+  <!-- Tuiles -->
+  <div class="section" style="padding-top:0">
+    <div class="blocs-title">Détail de la visite</div>
+    <div class="blocs-sub">Clique sur une tuile pour explorer les observations</div>
+    <div class="blocs-grid" id="blocs-grid"></div>
+  </div>
+
+  <div class="report-footer">
+    <div class="footer-brand">TEZENIS</div>
+    <div class="footer-sub" id="footer-date"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modal-content">
+    <div class="modal-header">
+      <div class="modal-icon" id="modal-icon">📱</div>
+      <div class="modal-hd">
+        <div class="modal-tag" id="modal-tag"></div>
+        <div class="modal-title" id="modal-title"></div>
+      </div>
+      <button class="btn-close" onclick="closeModalDirect()">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+let reportData = null;
+
+// ── DEMO DATA ────────────────────────────────────────────────────
+const DEMO = {
+  meta:{
+    magasin:'Tezenis — Toulouse Alsace-Lorraine',
+    date:'lundi 31 mars 2026',
+    heure:'14h30',
+    contexte:'Visite incognito — Candidature Directeur Régional'
+  },
+  blocs:{
+    digital:{label:'Digital',icon:'📱',title:'Check digital',data:{
+      verifies:['Homepage tezenis.com FR : quelle mise en avant principale ?','Natural Lifting présent ? Prix affiché, visuel utilisé ?','Instagram @tezenis_france : dernier post — quel produit, quel ton ?','Click & Collect disponible sur ce magasin ?'],
+      note:'Natural Lifting bien mis en avant en homepage avec promo bundle. Maillots de bain à vérifier en rayon — pas de zone dédiée visible sur le site FR.'
+    }},
+    client:{label:'Client',icon:'🚶',title:'Perception client',data:{
+      questions:[
+        {question:'Premier ressenti en approchant le magasin ?',reponse:'Vitrine attrayante, les couleurs saisonnières captent bien l\'attention depuis 10m.'},
+        {question:'La vitrine dit quoi en 3 secondes ?',reponse:'Collection printemps, tenues légères. Mais le Natural Lifting est absent de la vitrine alors qu\'il est mis en avant partout en ligne.'},
+        {question:'En entrant : tu te sens accueilli ?',reponse:'Pas de bonjour spontané. Une vendeuse m\'a regardé puis a continué son rangement.'},
+        {question:'Tu trouves facilement ce que tu cherches ?',reponse:'Parcours globalement logique. Quelques bacs en désordre en milieu de rayon — difficile de trouver sa taille rapidement.'},
+        {question:'Un truc qui t\'a donné envie d\'acheter ?',reponse:'La zone coordination couleurs bien travaillée sur les culottes. Les coloris saisonniers sont très beaux.'},
+        {question:'Un truc qui t\'a freiné ou déçu ?',reponse:'Absence d\'accueil. Et le Natural Lifting est perdu dans le rayon, pas mis en valeur du tout.'}
+      ],
+      synthese:'Un magasin visuellement séduisant mais qui rate l\'accueil et ne traduit pas ses propres priorités produit en magasin.'
+    }},
+    exterieur:{label:'Vitrine',icon:'🏪',title:'Extérieur & vitrine',data:{
+      evaluations:[
+        {critere:'Cohérence vitrine / comm digitale du moment',note:'À surveiller',valeur:'mid'},
+        {critere:'Identité colorée Tezenis respectée',note:'Positif',valeur:'pos'},
+        {critere:'Lisibilité de l\'offre depuis l\'extérieur',note:'Positif',valeur:'pos'},
+        {critere:'Propreté façade / éclairage / vitrine',note:'Positif',valeur:'pos'},
+        {critere:'Comparaison avec la concurrence visible',note:'À surveiller',valeur:'mid'}
+      ],
+      observations:'Vitrine dans l\'univers de la marque, bonne maîtrise des couleurs. Mais l\'opération Natural Lifting totalement absente alors qu\'elle est la priorité nationale. Undiz en face-à-face semble plus agressif sur les prix affichés.'
+    }},
+    merch:{label:'Merch',icon:'👙',title:'L\'enjeu Tezenis',data:{
+      evaluations:[
+        {critere:'Natural Lifting : visible, signé, prix clair ?',note:'Négatif',valeur:'neg'},
+        {critere:'Maillots de bain : zone implantée pour la saison ?',note:'À surveiller',valeur:'mid'},
+        {critere:'Bacs et présentoirs : pliage tenu, rangement par coloris ?',note:'À surveiller',valeur:'mid'},
+        {critere:'Visibilité des tailles sur portants et bacs',note:'Négatif',valeur:'neg'},
+        {critere:'Zones de cross-sell travaillées',note:'Positif',valeur:'pos'},
+        {critere:'ILV / PLV cohérente avec les campagnes en cours',note:'À surveiller',valeur:'mid'},
+        {critere:'Cabines : propres, signalées, files gérées',note:'Positif',valeur:'pos'},
+        {critere:'Visuels en mag : diversité des corps représentés ?',note:'Positif',valeur:'pos'}
+      ],
+      observations:'Natural Lifting noyé dans le linéaire — aucune tête de gondole, pas de signalétique prix distincte. Zone maillots ouverte mais pas encore pleinement implantée. Bacs milieu de rayon en désordre visible depuis l\'entrée. La coordination couleurs sur les bas est bien travaillée.',
+      recommandation_dr:'1. Implanter une tête de gondole Natural Lifting à l\'entrée cette semaine avec ILV prix. 2. Finaliser l\'implantation maillots avec visuels campagne. 3. Brief quotidien sur le pliage des bacs en début de journée.'
+    }},
+    equipe:{label:'Équipe',icon:'🧑‍🤝‍🧑',title:'Équipe & management',data:{
+      evaluations:[
+        {critere:'Accueil client : spontané et systématique ?',note:'Négatif',valeur:'neg'},
+        {critere:'Connaissance produit Natural Lifting',note:'À surveiller',valeur:'mid'},
+        {critere:'Vente additionnelle observée ?',note:'À surveiller',valeur:'mid'},
+        {critere:'Manager visible en surface, actif, pas en back',note:'Positif',valeur:'pos'},
+        {critere:'Gestion des moments de flux (file, cabines)',note:'Positif',valeur:'pos'},
+        {critere:'Dynamique d\'équipe : émulation ou ambiance molle ?',note:'À surveiller',valeur:'mid'}
+      ],
+      observations:'Manager présent et actif en surface — vrai point fort. Équipe de 3 personnes, dont une qui semble nouvelle. L\'accueil n\'est pas encore un réflexe systématique. Sur le Natural Lifting, une vendeuse m\'a donné le prix mais n\'a pas su expliquer le bénéfice produit.',
+      recommandation_dr:'Axe prioritaire : l\'accueil comme standard non négociable. Un jeu de rôle en brief matinal suffit à ancrer le réflexe en 2 semaines. Prévoir un flash produit de 5 min sur le Natural Lifting lors du prochain brief.'
+    }},
+    synthese:{label:'Synthèse',icon:'📋',title:'Synthèse DR',data:{
+      perception_client:'Un magasin séduisant visuellement qui manque son exécution sur l\'essentiel : l\'accueil et la mise en avant des produits prioritaires.',
+      enjeux:'1. Exécution des priorités nationales : le Natural Lifting est la priorité de la marque ce mois-ci — il doit être impossible à rater en magasin. Ce n\'est pas le cas. Écart digital/physique critique.\n\n2. Culture de l\'accueil : l\'accueil n\'est pas systématique. C\'est le premier point de contact avec la cliente — et le premier signal de la dynamique équipe. Un standard simple à poser avec le manager.\n\n3. Pliage et rangement des bacs : signature visuelle Tezenis. Quand c\'est tenu, l\'expérience client et la conversion suivent. Un brief quotidien et un standard de contrôle suffisent.',
+      plan_action:'QUICK WINS — 48h\n• Implanter tête de gondole Natural Lifting + ILV prix à l\'entrée\n• Brief équipe : ancrer le bonjour comme standard\n• Finaliser implantation zone maillots\n\nCOURT TERME — 2 semaines\n• Flash produit Natural Lifting (bénéfice + argumentaire) en brief\n• Mettre en place un contrôle visuel bacs en début de shift\n• Aligner visuels PLV avec la campagne digitale en cours\n\nAXE DE FOND — 1 mois\n• Accompagner le manager sur la posture "faire faire" vs "faire"\n• Instaurer un rituel de briefing quotidien avec objectif CA du jour\n• Évaluer la cohérence omnicanale sur la prochaine livraison collection'
+    }}
+  }
+};
+
+// ── LOAD ─────────────────────────────────────────────────────────
+function loadJSON(){
+  const raw = document.getElementById('json-input').value.trim();
+  if(!raw){ alert('Colle d\'abord le JSON exporté.'); return; }
+  try {
+    reportData = JSON.parse(raw);
+    renderReport();
+  } catch(e) {
+    alert('JSON invalide. Vérifie que tu as bien copié l\'intégralité du contenu exporté.');
+  }
+}
+
+function loadDemo(){ reportData = DEMO; renderReport(); }
+
+// ── RENDER REPORT ────────────────────────────────────────────────
+function renderReport(){
+  const m = reportData.meta;
+  document.getElementById('hero-magasin').textContent = (m.magasin||'').replace('Tezenis — ','');
+  document.getElementById('hero-loc').textContent = m.contexte||'';
+  document.getElementById('footer-date').textContent = m.date + (m.heure?' · '+m.heure:'');
+  document.getElementById('hero-meta').innerHTML = [
+    m.date ? `<div class="hero-meta-item"><strong>${m.date}</strong>Date de visite</div>` : '',
+    m.heure ? `<div class="hero-meta-item"><strong>${m.heure}</strong>Heure d'arrivée</div>` : ''
+  ].join('');
+
+  // Enjeux
+  const sd = (reportData.blocs.synthese||{}).data||{};
+  const enjeux = (sd.enjeux||'').split(/\n\n+/).filter(e=>e.trim());
+  const grid = document.getElementById('enjeux-grid');
+  if(enjeux.length){
+    grid.innerHTML = enjeux.slice(0,3).map((e,i)=>{
+      const clean = e.replace(/^\d+\.\s*/,'');
+      const firstLine = clean.split('\n')[0];
+      const rest = clean.split('\n').slice(1).join('\n').trim();
+      return `<div class="enjeu-card">
+        <div class="enjeu-num">${i+1}</div>
+        <div class="enjeu-label">Enjeu ${i+1}</div>
+        <div class="enjeu-text">${firstLine}${rest?'<br><span style="font-size:12px;color:rgba(255,255,255,0.45)">'+rest+'</span>':''}</div>
+      </div>`;
+    }).join('');
+  } else {
+    grid.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;grid-column:1/-1;padding:12px 0">Aucun enjeu renseigné</div>';
+  }
+
+  // Plan
+  if(sd.plan_action){
+    document.getElementById('plan-card').style.display='block';
+    document.getElementById('plan-content').textContent=sd.plan_action;
+  }
+
+  // Tuiles
+  const LABELS = {
+    digital:{tag:'Avant visite',color:null},
+    client:{tag:'Perception client',color:null},
+    exterieur:{tag:'Lecture DR',color:null},
+    merch:{tag:'Merchandising',color:null},
+    equipe:{tag:'Management',color:null},
+    synthese:{tag:'Synthèse DR',color:null}
+  };
+
+  const tilesGrid = document.getElementById('blocs-grid');
+  tilesGrid.innerHTML = Object.entries(reportData.blocs).filter(([k])=>k!=='synthese').map(([key,bloc])=>{
+    const score = getDominantScore(bloc.data);
+    const peek = getPeek(bloc.data);
+    return `<div class="bloc-tile" onclick="openModal('${key}')">
+      <span class="tile-icon">${bloc.icon}</span>
+      <div class="tile-score"><span class="score-dot ${score}"></span></div>
+      <div class="tile-label">${(LABELS[key]||{}).tag||''}</div>
+      <div class="tile-title">${bloc.title}</div>
+      ${peek ? `<div class="tile-peek">${peek}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  document.getElementById('import-screen').style.display='none';
+  document.getElementById('report').style.display='block';
+  window.scrollTo(0,0);
+}
+
+function getDominantScore(data){
+  if(!data.evaluations) return 'neutral';
+  const counts={pos:0,mid:0,neg:0};
+  data.evaluations.forEach(e=>{ if(e.valeur) counts[e.valeur]++; });
+  if(counts.neg>counts.pos&&counts.neg>counts.mid) return 'neg';
+  if(counts.pos>counts.neg) return 'pos';
+  return 'mid';
+}
+
+function getPeek(data){
+  if(data.synthese) return data.synthese;
+  if(data.observations) return data.observations;
+  if(data.note) return data.note;
+  if(data.questions) { const r=data.questions.find(q=>q.reponse); return r?r.reponse:''; }
+  return '';
+}
+
+// ── MODAL ────────────────────────────────────────────────────────
+function openModal(key){
+  const bloc = reportData.blocs[key];
+  if(!bloc) return;
+  document.getElementById('modal-icon').textContent = bloc.icon;
+  document.getElementById('modal-tag').textContent = bloc.label;
+  document.getElementById('modal-title').textContent = bloc.title;
+  document.getElementById('modal-body').innerHTML = buildModalBody(key, bloc);
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function buildModalBody(key, bloc){
+  const d = bloc.data; let html='';
+
+  if(d.verifies&&d.verifies.length){
+    html += section('Éléments vérifiés', `<div class="check-list">${d.verifies.map(v=>`<div class="check-list-item">${v}</div>`).join('')}</div>`);
+  }
+  if(d.note) html += section('Notes', `<div class="m-text">${d.note}</div>`);
+
+  if(d.questions){
+    html += section('Ressenti client', d.questions.map(q=>`
+      <div class="q-item">
+        <div class="q-question">${q.question}</div>
+        ${q.reponse ? `<div class="q-answer">${q.reponse}</div>` : '<div class="q-empty">—</div>'}
+      </div>`).join(''));
+  }
+  if(d.synthese) html += section('Synthèse', `<div class="m-text">${d.synthese}</div>`);
+
+  if(d.evaluations&&d.evaluations.length){
+    html += section('Évaluations', `<div>${d.evaluations.map(e=>`
+      <div class="criteria-item">
+        <span class="ci-dot ${e.valeur||'none'}"></span>
+        <span class="ci-text">${e.critere}</span>
+        <span class="ci-badge ${e.valeur||'none'}">${e.note}</span>
+      </div>`).join('')}</div>`);
+  }
+  if(d.observations) html += section('Observations terrain', `<div class="m-text">${d.observations}</div>`);
+  if(d.recommandation_dr) html += section('Recommandation DR', `<div class="m-text dr-text">${d.recommandation_dr}</div>`, true);
+
+  return html || '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:8px 0">Aucune donnée saisie pour ce bloc.</div>';
+}
+
+function section(label, content, isDr=false){
+  return `<div class="m-section"><div class="m-label${isDr?' dr':''}">${label}</div>${content}</div>`;
+}
+
+function closeModal(e){
+  if(e.target===document.getElementById('modal')) closeModalDirect();
+}
+function closeModalDirect(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+</script>
+</body>
+</html>
